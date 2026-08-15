@@ -2,3 +2,9 @@ test.py
 yolov8n-pose.pt
 tempCodeRunnerFile.py
 test2.py
+uploads/
+static/results/
+.venv/
+.app-config/
+Ultralytics/
+__pycache__/
