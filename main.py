@@ -20,7 +20,8 @@ from ultralytics import YOLO
 CONFIDENCE_THRESHOLD = 0.5
 
 app = Flask(__name__, template_folder="templates")
-app.config["MAX_CONTENT_LENGTH"] = 500 * 1024 * 1024
+# giới hạn kích thước tệp tải lên tối đa là 20MB
+app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 model = YOLO(str(BASE_DIR / "ok.pt"))
 
 
