@@ -1,65 +1,914 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Mô phỏng camera phát hiện ngã</title>
   <style>
-    :root{font-family:Inter,system-ui,sans-serif;color:#162036;background:#eef2f7;--blue:#255bd7;--red:#d92d3d;--green:#16834b}*{box-sizing:border-box}body{margin:0;padding:28px}main{width:min(1380px,100%);margin:auto}.top h1{margin:0 0 6px}.top p{margin:0;color:#687287}.layout{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(330px,.75fr);gap:20px;margin-top:22px}.panel{background:#fff;border:1px solid #dbe2ec;border-radius:18px;box-shadow:0 12px 35px #19335e12;overflow:hidden}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;border-bottom:1px solid #e2e7ef;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.live-badge{display:flex;align-items:center;gap:7px;color:#607089}.live-badge i{width:9px;height:9px;border-radius:50%;background:#9aa5b5}.live-badge.active{color:var(--red)}.live-badge.active i{background:var(--red);box-shadow:0 0 0 5px #d92d3d1c}.stream-body{padding:18px;background:#101522}.stage{position:relative;width:100%;min-height:420px;display:grid;place-items:center;border:2px solid #3e4a60;border-radius:13px;overflow:hidden;background:repeating-linear-gradient(135deg,#151c29,#151c29 18px,#192231 18px,#192231 36px)}.stage.has-video{min-height:0}video{display:none;width:100%;height:auto;background:#000}canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.placeholder{text-align:center;color:#aeb9ca;padding:60px 20px}.placeholder strong{display:block;color:#fff;font-size:20px;margin-bottom:8px}.stream-label{position:absolute;left:13px;top:13px;z-index:2;background:#0a0f18d9;border:1px solid #647188;color:#fff;border-radius:8px;padding:7px 10px;font-size:12px;font-weight:800}.send-rate{position:absolute;right:13px;top:13px;z-index:2;background:#255bd7e8;color:#fff;border-radius:8px;padding:7px 10px;font-size:12px}.controls{padding:18px;display:grid;gap:16px}.source-tabs{display:grid;grid-template-columns:1fr 1fr;background:#e9eef6;border-radius:11px;padding:4px;gap:4px}.source-tabs button{border:0;border-radius:8px;background:transparent;color:#526078;padding:11px;font-weight:750;cursor:pointer}.source-tabs button.active{background:#fff;color:var(--blue);box-shadow:0 3px 10px #19335e18}.file-box,.camera-box{border:2px dashed #aab6c8;border-radius:12px;padding:18px}.file-box label,.camera-box label{display:block;font-weight:750;margin-bottom:9px}.file-box input,.camera-box select{width:100%}.camera-box{display:none}.camera-actions{display:flex;gap:9px;margin-top:12px}.camera-actions button{border:0;border-radius:9px;padding:11px 15px;background:var(--blue);color:#fff;font-weight:750;cursor:pointer}.camera-actions .stop-camera{background:#b42332}.camera-actions button:disabled{opacity:.45;cursor:not-allowed}.transport{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}.transport button{width:48px;height:44px;border:0;border-radius:10px;background:var(--blue);color:#fff;font-size:18px;cursor:pointer}.transport button:disabled{opacity:.45;cursor:not-allowed}.transport input{width:100%;accent-color:var(--blue)}.time{font-variant-numeric:tabular-nums;color:#546078;min-width:105px;text-align:right}.status-line{display:flex;justify-content:space-between;gap:15px;font-size:13px;color:#687287}.chat{height:calc(100vh - 158px);min-height:620px;display:flex;flex-direction:column}.chat-head{padding:16px 18px;border-bottom:1px solid #e2e7ef}.chat-head h2{font-size:17px;margin:0 0 5px}.chat-head p{font-size:13px;color:#687287;margin:0}.messages{padding:14px;overflow:auto;display:flex;flex-direction:column;gap:11px;background:#f7f9fc;flex:1}.empty{text-align:center;color:#7c8799;margin:auto;padding:30px}.message{border:1px solid #dfe5ee;border-left:5px solid var(--red);background:#fff8f8;border-radius:11px;padding:13px;box-shadow:0 5px 16px #19335e0b}.message-top{display:flex;justify-content:space-between;gap:10px}.verdict{font-weight:850;color:#b71929}.stamp{font-size:12px;color:#778296}.event-status{display:inline-block;margin-top:8px;padding:4px 8px;border-radius:99px;background:#ffe1e4;color:#a51d2a;font-size:12px;font-weight:750}.event-status.closed{background:#e8edf4;color:#59677b}.message p{font-size:13px;color:#505d72;margin:8px 0 0;line-height:1.45}.evidence-strip{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x proximity;padding:4px 2px 10px;margin-top:10px}.evidence-item{flex:0 0 190px;scroll-snap-align:start}.evidence{display:block;width:190px;height:125px;object-fit:contain;background:#111;border-radius:8px}.image-caption{display:flex;justify-content:space-between;gap:6px;margin-top:4px;font-size:11px;color:#69758a}.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}.chip{background:#fee8ea;color:#9d1c29;border-radius:99px;padding:4px 8px;font-size:12px}.error{color:#b71929}@media(max-width:900px){body{padding:16px}.layout{grid-template-columns:1fr}.chat{height:620px}.stage{min-height:280px}.stage.has-video{min-height:0}.camera-actions{flex-direction:column}}
+    :root {
+      font-family: Inter, system-ui, sans-serif;
+      color: #162036;
+      background: #eef2f7;
+      --blue: #255bd7;
+      --red: #d92d3d;
+      --green: #16834b
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      padding: 28px
+    }
+
+    main {
+      width: min(1380px, 100%);
+      margin: auto
+    }
+
+    .top h1 {
+      margin: 0 0 6px
+    }
+
+    .top p {
+      margin: 0;
+      color: #687287
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(330px, .75fr);
+      gap: 20px;
+      margin-top: 22px
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #dbe2ec;
+      border-radius: 18px;
+      box-shadow: 0 12px 35px #19335e12;
+      overflow: hidden
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 18px;
+      border-bottom: 1px solid #e2e7ef;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #607089
+    }
+
+    .live-badge i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #9aa5b5
+    }
+
+    .live-badge.active {
+      color: var(--red)
+    }
+
+    .live-badge.active i {
+      background: var(--red);
+      box-shadow: 0 0 0 5px #d92d3d1c
+    }
+
+    .stream-body {
+      padding: 18px;
+      background: #101522
+    }
+
+    .stage {
+      position: relative;
+      width: 100%;
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      border: 2px solid #3e4a60;
+      border-radius: 13px;
+      overflow: hidden;
+      background: repeating-linear-gradient(135deg, #151c29, #151c29 18px, #192231 18px, #192231 36px)
+    }
+
+    .stage.has-video {
+      min-height: 0
+    }
+
+    video {
+      display: none;
+      width: 100%;
+      height: auto;
+      background: #000
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none
+    }
+
+    .placeholder {
+      text-align: center;
+      color: #aeb9ca;
+      padding: 60px 20px
+    }
+
+    .placeholder strong {
+      display: block;
+      color: #fff;
+      font-size: 20px;
+      margin-bottom: 8px
+    }
+
+    .stream-label {
+      position: absolute;
+      left: 13px;
+      top: 13px;
+      z-index: 2;
+      background: #0a0f18d9;
+      border: 1px solid #647188;
+      color: #fff;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800
+    }
+
+    .send-rate {
+      position: absolute;
+      right: 13px;
+      top: 13px;
+      z-index: 2;
+      background: #255bd7e8;
+      color: #fff;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px
+    }
+
+    .controls {
+      padding: 18px;
+      display: grid;
+      gap: 16px
+    }
+
+    .source-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: #e9eef6;
+      border-radius: 11px;
+      padding: 4px;
+      gap: 4px
+    }
+
+    .source-tabs button {
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: #526078;
+      padding: 11px;
+      font-weight: 750;
+      cursor: pointer
+    }
+
+    .source-tabs button.active {
+      background: #fff;
+      color: var(--blue);
+      box-shadow: 0 3px 10px #19335e18
+    }
+
+    .file-box,
+    .camera-box {
+      border: 2px dashed #aab6c8;
+      border-radius: 12px;
+      padding: 18px
+    }
+
+    .file-box label,
+    .camera-box label {
+      display: block;
+      font-weight: 750;
+      margin-bottom: 9px
+    }
+
+    .file-box input,
+    .camera-box select {
+      width: 100%
+    }
+
+    .camera-box {
+      display: none
+    }
+
+    .camera-actions {
+      display: flex;
+      gap: 9px;
+      margin-top: 12px
+    }
+
+    .camera-actions button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 15px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 750;
+      cursor: pointer
+    }
+
+    .camera-actions .stop-camera {
+      background: #b42332
+    }
+
+    .camera-actions button:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .transport {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 12px;
+      align-items: center
+    }
+
+    .transport button {
+      width: 48px;
+      height: 44px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--blue);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer
+    }
+
+    .transport button:disabled {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .transport input {
+      width: 100%;
+      accent-color: var(--blue)
+    }
+
+    .time {
+      font-variant-numeric: tabular-nums;
+      color: #546078;
+      min-width: 105px;
+      text-align: right
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      font-size: 13px;
+      color: #687287
+    }
+
+    .chat {
+      height: calc(100vh - 158px);
+      min-height: 620px;
+      display: flex;
+      flex-direction: column
+    }
+
+    .chat-head {
+      padding: 16px 18px;
+      border-bottom: 1px solid #e2e7ef
+    }
+
+    .chat-head h2 {
+      font-size: 17px;
+      margin: 0 0 5px
+    }
+
+    .chat-head p {
+      font-size: 13px;
+      color: #687287;
+      margin: 0
+    }
+
+    .messages {
+      padding: 14px;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      background: #f7f9fc;
+      flex: 1
+    }
+
+    .empty {
+      text-align: center;
+      color: #7c8799;
+      margin: auto;
+      padding: 30px
+    }
+
+    .message {
+      border: 1px solid #dfe5ee;
+      border-left: 5px solid var(--red);
+      background: #fff8f8;
+      border-radius: 11px;
+      padding: 13px;
+      box-shadow: 0 5px 16px #19335e0b
+    }
+
+    .message-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px
+    }
+
+    .verdict {
+      font-weight: 850;
+      color: #b71929
+    }
+
+    .stamp {
+      font-size: 12px;
+      color: #778296
+    }
+
+    .event-status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 99px;
+      background: #ffe1e4;
+      color: #a51d2a;
+      font-size: 12px;
+      font-weight: 750
+    }
+
+    .event-status.closed {
+      background: #e8edf4;
+      color: #59677b
+    }
+
+    .message p {
+      font-size: 13px;
+      color: #505d72;
+      margin: 8px 0 0;
+      line-height: 1.45
+    }
+
+    .evidence-strip {
+      display: flex;
+      gap: 9px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding: 4px 2px 10px;
+      margin-top: 10px
+    }
+
+    .evidence-item {
+      flex: 0 0 190px;
+      scroll-snap-align: start
+    }
+
+    .evidence {
+      display: block;
+      width: 190px;
+      height: 125px;
+      object-fit: contain;
+      background: #111;
+      border-radius: 8px
+    }
+
+    .image-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 11px;
+      color: #69758a
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 9px
+    }
+
+    .chip {
+      background: #fee8ea;
+      color: #9d1c29;
+      border-radius: 99px;
+      padding: 4px 8px;
+      font-size: 12px
+    }
+
+    .error {
+      color: #b71929
+    }
+
+    @media(max-width:900px) {
+      body {
+        padding: 16px
+      }
+
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .chat {
+        height: 620px
+      }
+
+      .stage {
+        min-height: 280px
+      }
+
+      .stage.has-video {
+        min-height: 0
+      }
+
+      .camera-actions {
+        flex-direction: column
+      }
+    }
+  </style>
+  <style>
+    .vitals-body {
+      padding: 18px
+    }
+
+    .vitals-note {
+      margin: 0 0 14px;
+      color: #6b7588;
+      font-size: 12px
+    }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px
+    }
+
+    .vital-card {
+      border: 1px solid #dfe6ef;
+      border-radius: 14px;
+      padding: 15px;
+      background: linear-gradient(145deg, #fff, #f7f9fc)
+    }
+
+    .vital-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px
+    }
+
+    .vital-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: #526078
+    }
+
+    .vital-state {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 99px;
+      background: #e8f6ee;
+      color: #16834b
+    }
+
+    .vital-state.warning {
+      background: #fff0d9;
+      color: #a45b00
+    }
+
+    .vital-state.danger {
+      background: #ffe3e6;
+      color: #b71929
+    }
+
+    .vital-reading {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin: 12px 0 4px;
+      font-variant-numeric: tabular-nums
+    }
+
+    .vital-value {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+      color: #17223a
+    }
+
+    .vital-unit {
+      font-size: 12px;
+      color: #778296
+    }
+
+    .vital-range {
+      font-size: 11px;
+      color: #8a94a5;
+      min-height: 17px
+    }
+
+    .vital-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 13px
+    }
+
+    .vital-actions button {
+      border: 1px solid #cad4e2;
+      background: #fff;
+      color: #536177;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 750;
+      cursor: pointer
+    }
+
+    .vital-actions button.active {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff
+    }
+
+    .heart-pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #e43f51;
+      animation: heartbeat 1s infinite
+    }
+
+    .heart-pulse.stopped {
+      background: #9aa5b5;
+      animation: none
+    }
+
+    @keyframes heartbeat {
+
+      0%,
+      100% {
+        transform: scale(.8);
+        opacity: .55
+      }
+
+      35% {
+        transform: scale(1.35);
+        opacity: 1
+      }
+    }
+
+    @media(max-width:650px) {
+      .vitals-grid {
+        grid-template-columns: 1fr
+      }
+    }
   </style>
 </head>
-<body><main>
-  <header class="top"><h1>Mô phỏng camera phát hiện ngã</h1><p>Video được phát theo thời gian thực; trình duyệt gửi một khung JPEG tới AI sau mỗi 0,5 giây.</p></header>
-  <div class="layout">
-    <div>
-      <section class="panel">
-        <div class="panel-title"><span>Vùng stream video</span><span id="live" class="live-badge"><i></i><b>Đang dừng</b></span></div>
-        <div class="stream-body"><div id="stage" class="stage">
-          <div class="stream-label">LUỒNG VIDEO MÔ PHỎNG CAMERA</div><div class="send-rate">1 khung / 0,5 giây</div>
-          <div id="placeholder" class="placeholder"><strong>Chưa có video</strong>Chọn một file MP4 trong bảng điều khiển bên dưới.</div>
-          <video id="video" playsinline></video><canvas id="overlay"></canvas>
-        </div></div>
-      </section>
-      <section class="panel" style="margin-top:20px">
-        <div class="panel-title">Bảng điều khiển</div>
-        <div class="controls">
-          <div class="source-tabs"><button id="fileMode" class="active" type="button">Video MP4</button><button id="cameraMode" type="button">Camera trực tiếp</button></div>
-          <div id="fileControls" class="file-box"><label for="file">Chọn video MP4</label><input id="file" type="file" accept="video/mp4,.mp4"></div>
-          <div id="cameraControls" class="camera-box"><label for="facing">Chọn camera</label><select id="facing"><option value="environment">Camera sau</option><option value="user">Camera trước</option></select><div class="camera-actions"><button id="startCamera" type="button">Bật camera</button><button id="stopCamera" class="stop-camera" type="button" disabled>Tắt camera</button></div></div>
-          <div id="transport" class="transport"><button id="toggle" disabled aria-label="Phát video">▶</button><input id="seek" type="range" min="0" max="1000" value="0" disabled><span id="time" class="time">00:00 / 00:00</span></div>
-          <div class="status-line"><span id="status">Sẵn sàng chọn video.</span><span id="server">Server: chờ khung hình</span></div>
+
+<body>
+  <main>
+    <header class="top">
+      <h1>Mô phỏng camera phát hiện ngã</h1>
+      <p>Video được phát theo thời gian thực; trình duyệt gửi một khung JPEG tới AI sau mỗi 0,5 giây.</p>
+    </header>
+    <div class="layout">
+      <div>
+        <section class="panel">
+          <div class="panel-title"><span>Vùng stream video</span><span id="live" class="live-badge"><i></i><b>Đang
+                dừng</b></span></div>
+          <div class="stream-body">
+            <div id="stage" class="stage">
+              <div class="stream-label">LUỒNG VIDEO MÔ PHỎNG CAMERA</div>
+              <div class="send-rate">1 khung / 0,5 giây</div>
+              <div id="placeholder" class="placeholder"><strong>Chưa có video</strong>Chọn một file MP4 trong bảng điều
+                khiển bên dưới.</div>
+              <video id="video" playsinline></video><canvas id="overlay"></canvas>
+            </div>
+          </div>
+        </section>
+        <section class="panel" style="margin-top:20px">
+          <div class="panel-title">Bảng điều khiển</div>
+          <div class="controls">
+            <div class="source-tabs"><button id="fileMode" class="active" type="button">Video MP4</button><button
+                id="cameraMode" type="button">Camera trực tiếp</button></div>
+            <div id="fileControls" class="file-box"><label for="file">Chọn video MP4</label><input id="file" type="file"
+                accept="video/mp4,.mp4"></div>
+            <div id="fileWebRtcControls" class="camera-actions"><button id="enableFileWebRtc" type="button">Bật kết nối
+                stream</button><button id="disableFileWebRtc" class="stop-camera" type="button" disabled>Tắt kết nối
+                stream</button></div>
+            <div id="cameraControls" class="camera-box"><label for="facing">Chọn camera</label><select id="facing">
+                <option value="environment">Camera sau</option>
+                <option value="user">Camera trước</option>
+              </select>
+              <div class="camera-actions"><button id="startCamera" type="button">Bật camera</button><button
+                  id="stopCamera" class="stop-camera" type="button" disabled>Tắt camera</button></div>
+            </div>
+            <div id="transport" class="transport"><button id="toggle" disabled aria-label="Phát video">▶</button><input
+                id="seek" type="range" min="0" max="1000" value="0" disabled><span id="time" class="time">00:00 /
+                00:00</span></div>
+            <div class="status-line"><span id="status">Sẵn sàng chọn video.</span><span id="server">Server: chờ khung
+                hình</span></div>
+            <div class="file-box"><label>Test cuộc gọi Infobip</label>
+              <div class="camera-actions"><button id="makeTestCall" type="button">Gọi thử</button></div>
+              <div id="testCallStatus" style="margin-top:10px;font-size:13px;color:#687287">Gọi tới 0981055321 · Nội
+                dung thoại: Phát hiện ngã</div>
+            </div>
+          </div>
+        </section>
+        <section class="panel" style="margin-top:20px">
+          <div class="panel-title"><span>Mô phỏng sinh hiệu từ Watch</span><span
+              class="live-badge active"><i></i><b>LIVE DEMO</b></span></div>
+          <div class="vitals-body">
+            <p class="vitals-note">Dữ liệu giả lập trên trình duyệt để thử giao diện, không phải kết quả đo hoặc chẩn
+              đoán y tế.</p>
+            <div class="vitals-grid">
+              <article class="vital-card">
+                <div class="vital-head"><span class="vital-name">NHỊP TIM</span><span id="heartState"
+                    class="vital-state">Bình thường</span></div>
+                <div class="vital-reading"><i id="heartPulse" class="heart-pulse"></i><span id="heartValue"
+                    class="vital-value">74</span><span class="vital-unit">bpm</span></div>
+                <div id="heartRange" class="vital-range">Dao động demo: 65–85 bpm</div>
+                <div class="vital-actions" data-vital="heart"><button data-mode="stopped">Không đập</button><button
+                    data-mode="slow">Đập chậm</button><button class="active" data-mode="normal">Bình
+                    thường</button><button data-mode="fast">Đập nhanh</button></div>
+              </article>
+              <article class="vital-card">
+                <div class="vital-head"><span class="vital-name">NỒNG ĐỘ OXY MÁU</span><span id="spo2State"
+                    class="vital-state">Bình thường</span></div>
+                <div class="vital-reading"><span id="spo2Value" class="vital-value">98</span><span class="vital-unit">%
+                    SpO₂</span></div>
+                <div id="spo2Range" class="vital-range">Dao động demo: 95–98%</div>
+                <div class="vital-actions" data-vital="spo2"><button data-mode="low">Loãng</button><button
+                    class="active" data-mode="normal">Bình thường</button><button data-mode="high">Đậm</button></div>
+              </article>
+              <article class="vital-card">
+                <div class="vital-head"><span class="vital-name">HUYẾT ÁP</span><span id="bloodPressureState"
+                    class="vital-state">Bình thường</span></div>
+                <div class="vital-reading"><span id="bloodPressureValue" class="vital-value">114/74</span><span
+                    class="vital-unit">mmHg</span></div>
+                <div id="bloodPressureRange" class="vital-range">Dao động demo: 105–119 / 65–79</div>
+                <div class="vital-actions" data-vital="bloodPressure"><button data-mode="low">Tụt huyết
+                    áp</button><button class="active" data-mode="normal">Bình thường</button><button
+                    data-mode="high">Cao huyết áp</button></div>
+              </article>
+              <article class="vital-card">
+                <div class="vital-head"><span class="vital-name">BƯỚC CHÂN</span><span id="stepsState"
+                    class="vital-state">Đang dừng</span></div>
+                <div class="vital-reading"><span id="stepsValue" class="vital-value">0</span><span
+                    class="vital-unit">bước</span></div>
+                <div id="stepsRange" class="vital-range">Không tăng khi đang dừng</div>
+                <div class="vital-actions" data-vital="steps"><button class="active"
+                    data-mode="stopped">Dừng</button><button data-mode="walk">Đi · +1/s</button><button
+                    data-mode="run">Chạy · +3/s</button></div>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+      <aside class="panel chat">
+        <div class="chat-head">
+          <h2>Cảnh báo AI phát hiện ngã</h2>
+          <p>Chỉ hiển thị khung có nhãn <code>fall</code>; cảnh báo mới nhất luôn nằm trên cùng.</p>
         </div>
-      </section>
+        <div id="messages" class="messages">
+          <div id="empty" class="empty">Chưa phát hiện khung hình có dấu hiệu ngã.</div>
+        </div>
+      </aside>
     </div>
-    <aside class="panel chat"><div class="chat-head"><h2>Cảnh báo AI phát hiện ngã</h2><p>Chỉ hiển thị khung có nhãn <code>fall</code>; cảnh báo mới nhất luôn nằm trên cùng.</p></div><div id="messages" class="messages"><div id="empty" class="empty">Chưa phát hiện khung hình có dấu hiệu ngã.</div></div></aside>
-  </div>
-</main>
-<script>
-const video=document.querySelector('#video'),overlay=document.querySelector('#overlay'),ctx=overlay.getContext('2d'),file=document.querySelector('#file'),toggle=document.querySelector('#toggle'),seek=document.querySelector('#seek'),timeLabel=document.querySelector('#time'),status=document.querySelector('#status'),server=document.querySelector('#server'),messages=document.querySelector('#messages'),placeholder=document.querySelector('#placeholder'),live=document.querySelector('#live'),fileMode=document.querySelector('#fileMode'),cameraMode=document.querySelector('#cameraMode'),fileControls=document.querySelector('#fileControls'),cameraControls=document.querySelector('#cameraControls'),transport=document.querySelector('#transport'),facing=document.querySelector('#facing'),startCamera=document.querySelector('#startCamera'),stopCamera=document.querySelector('#stopCamera');
-let timer=null,busy=false,sequence=0,objectUrl=null,activeEvent=null,cameraStream=null,sourceMode='file';const EVENT_GAP_MS=2000;
-const formatTime=s=>{if(!Number.isFinite(s))s=0;const m=Math.floor(s/60),sec=Math.floor(s%60);return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`};
-function syncCanvas(){overlay.width=video.videoWidth||1;overlay.height=video.videoHeight||1}
-function clearBoxes(){ctx.clearRect(0,0,overlay.width,overlay.height)}
-function drawBoxes(data){clearBoxes();ctx.lineWidth=Math.max(3,overlay.width/300);ctx.font=`bold ${Math.max(16,overlay.width/45)}px system-ui`;for(const item of data.detections){const [x1,y1,x2,y2]=item.box,isFall=item.class_name==='fall';ctx.strokeStyle=isFall?'#ff3045':'#21df7a';ctx.fillStyle=ctx.strokeStyle;ctx.strokeRect(x1,y1,x2-x1,y2-y1);const label=`${item.class_name} ${(item.confidence*100).toFixed(1)}%`,w=ctx.measureText(label).width+12,h=Math.max(24,overlay.width/35);ctx.fillRect(x1,Math.max(0,y1-h),w,h);ctx.fillStyle='#fff';ctx.fillText(label,x1+6,Math.max(h-6,y1-6))}}
-function selectEvenly(frames){if(frames.length<=10)return frames;const chosen=[];for(let i=0;i<10;i++)chosen.push(frames[Math.round(i*(frames.length-1)/9)]);return chosen}
-function renderEvent(event){const frames=selectEvenly(event.frames),end=event.closed?event.endTime:'đang diễn ra',highest=Math.max(...event.frames.map(f=>f.confidence));event.element.innerHTML=`<div class="message-top"><span class="verdict">⚠ Sự kiện ngã #${event.id}</span><span class="stamp">${event.startTime}</span></div><span class="event-status ${event.closed?'closed':''}">${event.closed?'Đã kết thúc':'Đang phát hiện'}</span><p>${event.startTime} → ${end}<br>${event.frames.length} tín hiệu fall · confidence cao nhất ${(highest*100).toFixed(1)}%</p><div class="evidence-strip">${frames.map((frame,index)=>`<div class="evidence-item"><img class="evidence" src="${frame.image}" alt="Ảnh sự kiện ngã"><div class="image-caption"><span>${index===0?'Ảnh đầu':index===frames.length-1?'Ảnh cuối':`Ảnh ${index+1}`}</span><span>${frame.time}</span></div></div>`).join('')}</div>`}
-function closeActiveEvent(){if(!activeEvent)return;activeEvent.closed=true;activeEvent.endTime=activeEvent.frames.at(-1).time;activeEvent.frames=selectEvenly(activeEvent.frames);renderEvent(activeEvent);activeEvent=null}
-function processEventResult(data){const now=Date.now();if(data.has_fall){if(activeEvent&&now-activeEvent.lastFallAt>EVENT_GAP_MS)closeActiveEvent();if(!activeEvent){document.querySelector('#empty')?.remove();const element=document.createElement('article');element.className='message';messages.prepend(element);activeEvent={id:++sequence,startTime:data.server_time,endTime:data.server_time,lastFallAt:now,closed:false,frames:[],element};while(messages.children.length>30)messages.lastElementChild.remove()}const confidence=Math.max(...data.detections.filter(d=>d.class_name==='fall').map(d=>d.confidence));activeEvent.frames.push({image:data.frame_image,time:data.server_time,confidence});activeEvent.endTime=data.server_time;activeEvent.lastFallAt=now;renderEvent(activeEvent)}else if(activeEvent&&now-activeEvent.lastFallAt>=EVENT_GAP_MS)closeActiveEvent()}
-async function sendFrame(){if(video.paused||video.ended||busy||!video.videoWidth)return;busy=true;server.textContent='Server: đang phân tích…';const capture=document.createElement('canvas');capture.width=video.videoWidth;capture.height=video.videoHeight;capture.getContext('2d').drawImage(video,0,0);try{const blob=await new Promise(resolve=>capture.toBlob(resolve,'image/jpeg',.82));if(!blob)throw new Error('Không tạo được ảnh JPEG');const body=new FormData();body.append('frame',blob,'frame.jpg');const response=await fetch('/analyze-frame',{method:'POST',body}),data=await response.json();if(!response.ok)throw new Error(data.error||'Server không thể xử lý khung hình');drawBoxes(data);processEventResult(data);server.textContent=`Server: ${data.processing_ms} ms · ${data.detections.length} đối tượng`}catch(error){server.innerHTML=`<span class="error">Server: ${error.message}</span>`}finally{busy=false}}
-function startStreaming(){if(timer)return;timer=setInterval(sendFrame,500);sendFrame()}
-function stopStreaming(){clearInterval(timer);timer=null;busy=false;server.textContent='Server: đã tạm dừng'}
-function updateTransport(){if(sourceMode==='camera')return;seek.value=video.duration?Math.round(video.currentTime/video.duration*1000):0;timeLabel.textContent=`${formatTime(video.currentTime)} / ${formatTime(video.duration)}`}
-function stopCameraTracks(){if(cameraStream){cameraStream.getTracks().forEach(track=>track.stop());cameraStream=null}stopCamera.disabled=true;startCamera.disabled=false}
-function resetSource(){closeActiveEvent();stopStreaming();if(!video.paused)video.pause();stopCameraTracks();video.srcObject=null;video.removeAttribute('src');video.load();video.style.display='none';document.querySelector('#stage').classList.remove('has-video');placeholder.style.display='block';clearBoxes()}
-function setSourceMode(mode){if(sourceMode===mode)return;resetSource();sourceMode=mode;const camera=mode==='camera';fileMode.classList.toggle('active',!camera);cameraMode.classList.toggle('active',camera);fileControls.style.display=camera?'none':'block';cameraControls.style.display=camera?'block':'none';transport.style.display=camera?'none':'grid';placeholder.innerHTML=camera?'<strong>Camera chưa bật</strong>Bấm “Bật camera” và cho phép trình duyệt sử dụng camera.':'<strong>Chưa có video</strong>Chọn một file MP4 trong bảng điều khiển bên dưới.';status.textContent=camera?'Sẵn sàng xin quyền camera.':'Sẵn sàng chọn video.';server.textContent='Server: chờ khung hình'}
-fileMode.onclick=()=>setSourceMode('file');cameraMode.onclick=()=>setSourceMode('camera');
-file.onchange=()=>{const selected=file.files[0];if(!selected)return;closeActiveEvent();stopStreaming();stopCameraTracks();video.srcObject=null;if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(selected);video.src=objectUrl;video.style.display='block';document.querySelector('#stage').classList.add('has-video');placeholder.style.display='none';toggle.disabled=false;seek.disabled=false;status.textContent=`Đã chọn: ${selected.name}`;clearBoxes()};
-startCamera.onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia){status.innerHTML='<span class="error">Trình duyệt không hỗ trợ camera hoặc trang chưa dùng HTTPS.</span>';return}startCamera.disabled=true;status.textContent='Đang xin quyền sử dụng camera…';try{stopCameraTracks();cameraStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing.value}},audio:false});video.removeAttribute('src');video.srcObject=cameraStream;video.style.display='block';document.querySelector('#stage').classList.add('has-video');placeholder.style.display='none';stopCamera.disabled=false;startCamera.disabled=true;await video.play();status.textContent=`Camera ${facing.value==='environment'?'sau':'trước'} đang stream.`}catch(error){stopCameraTracks();status.innerHTML=`<span class="error">Không thể mở camera: ${error.message}</span>`}};
-stopCamera.onclick=()=>{resetSource();placeholder.innerHTML='<strong>Camera đã tắt</strong>Bấm “Bật camera” để sử dụng lại.';status.textContent='Camera đã được tắt.'};
-facing.onchange=async()=>{if(cameraStream){stopCameraTracks();startCamera.click()}};
-toggle.onclick=()=>video.paused?video.play():video.pause();
-video.onplay=()=>{toggle.textContent='❚❚';toggle.setAttribute('aria-label','Tạm dừng video');live.classList.add('active');live.querySelector('b').textContent='Đang stream';status.textContent='Video đang phát và gửi khung hình.';startStreaming()};
-video.onpause=()=>{toggle.textContent='▶';toggle.setAttribute('aria-label','Phát video');live.classList.remove('active');live.querySelector('b').textContent='Đang dừng';if(sourceMode==='file')status.textContent='Video đang tạm dừng.';stopStreaming();closeActiveEvent()};
-video.onended=()=>{status.textContent='Video đã phát hết.';stopStreaming();closeActiveEvent()};video.ontimeupdate=updateTransport;video.onloadedmetadata=()=>{syncCanvas();updateTransport()};
-seek.oninput=()=>{if(video.duration){video.currentTime=seek.value/1000*video.duration;clearBoxes();updateTransport()}};window.onresize=syncCanvas;
-</script></body></html>
+  </main>
+  <script>
+    const video = document.querySelector('#video'), overlay = document.querySelector('#overlay'), ctx = overlay.getContext('2d'), file = document.querySelector('#file'), toggle = document.querySelector('#toggle'), seek = document.querySelector('#seek'), timeLabel = document.querySelector('#time'), status = document.querySelector('#status'), server = document.querySelector('#server'), messages = document.querySelector('#messages'), placeholder = document.querySelector('#placeholder'), live = document.querySelector('#live'), fileMode = document.querySelector('#fileMode'), cameraMode = document.querySelector('#cameraMode'), fileControls = document.querySelector('#fileControls'), cameraControls = document.querySelector('#cameraControls'), transport = document.querySelector('#transport'), facing = document.querySelector('#facing'), startCamera = document.querySelector('#startCamera'), stopCamera = document.querySelector('#stopCamera');
+    let timer = null, busy = false, sequence = 0, objectUrl = null, activeEvent = null, cameraStream = null, sourceMode = 'file'; const EVENT_GAP_MS = 2000;
+    const formatTime = s => { if (!Number.isFinite(s)) s = 0; const m = Math.floor(s / 60), sec = Math.floor(s % 60); return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` };
+    function syncCanvas() { overlay.width = video.videoWidth || 1; overlay.height = video.videoHeight || 1 }
+    function clearBoxes() { ctx.clearRect(0, 0, overlay.width, overlay.height) }
+    function drawBoxes(data) { clearBoxes(); ctx.lineWidth = Math.max(3, overlay.width / 300); ctx.font = `bold ${Math.max(16, overlay.width / 45)}px system-ui`; for (const item of data.detections) { const [x1, y1, x2, y2] = item.box, isFall = item.class_name === 'fall'; ctx.strokeStyle = isFall ? '#ff3045' : '#21df7a'; ctx.fillStyle = ctx.strokeStyle; ctx.strokeRect(x1, y1, x2 - x1, y2 - y1); const label = `${item.class_name} ${(item.confidence * 100).toFixed(1)}%`, w = ctx.measureText(label).width + 12, h = Math.max(24, overlay.width / 35); ctx.fillRect(x1, Math.max(0, y1 - h), w, h); ctx.fillStyle = '#fff'; ctx.fillText(label, x1 + 6, Math.max(h - 6, y1 - 6)) } }
+    function selectEvenly(frames) { if (frames.length <= 10) return frames; const chosen = []; for (let i = 0; i < 10; i++)chosen.push(frames[Math.round(i * (frames.length - 1) / 9)]); return chosen }
+    function renderEvent(event) { const frames = selectEvenly(event.frames), end = event.closed ? event.endTime : 'đang diễn ra', highest = Math.max(...event.frames.map(f => f.confidence)); event.element.innerHTML = `<div class="message-top"><span class="verdict">⚠ Sự kiện ngã #${event.id}</span><span class="stamp">${event.startTime}</span></div><span class="event-status ${event.closed ? 'closed' : ''}">${event.closed ? 'Đã kết thúc' : 'Đang phát hiện'}</span><p>${event.startTime} → ${end}<br>${event.frames.length} tín hiệu fall · confidence cao nhất ${(highest * 100).toFixed(1)}%</p><div class="evidence-strip">${frames.map((frame, index) => `<div class="evidence-item"><img class="evidence" src="${frame.image}" alt="Ảnh sự kiện ngã"><div class="image-caption"><span>${index === 0 ? 'Ảnh đầu' : index === frames.length - 1 ? 'Ảnh cuối' : `Ảnh ${index + 1}`}</span><span>${frame.time}</span></div></div>`).join('')}</div>` }
+    async function saveFallEvent(event) {
+      const payload = { camera_id: new URLSearchParams(location.search).get('camera_id') || '1', client_event_id: event.clientEventId, started_at: event.startTime, ended_at: event.endTime, signal_count: event.signalCount, max_confidence: Math.max(...event.frames.map(frame => frame.confidence)), images: event.frames.map(frame => ({ image: frame.image, captured_at: frame.time, confidence: frame.confidence })) };
+      try { const response = await fetch('/api/fall-events', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }), result = await response.json(); if (!response.ok) throw new Error(result.error || 'Không thể lưu sự kiện'); event.savedEventId = result.event?.id || result.event_id; renderEvent(event) } catch (error) { event.saveError = error.message; renderEvent(event); server.innerHTML = `<span class="error">Lưu sự kiện: ${error.message}</span>` }
+    }
+    function closeActiveEvent() { if (!activeEvent) return; activeEvent.closed = true; activeEvent.endTime = activeEvent.frames.at(-1).time; activeEvent.signalCount = activeEvent.frames.length; activeEvent.frames = selectEvenly(activeEvent.frames); renderEvent(activeEvent); saveFallEvent(activeEvent); activeEvent = null }
+    function processEventResult(data) { const now = Date.now(); if (data.has_fall) { if (activeEvent && now - activeEvent.lastFallAt > EVENT_GAP_MS) closeActiveEvent(); if (!activeEvent) { document.querySelector('#empty')?.remove(); const element = document.createElement('article'); element.className = 'message'; messages.prepend(element); activeEvent = { id: ++sequence, clientEventId: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`, startTime: data.server_time, endTime: data.server_time, lastFallAt: now, closed: false, frames: [], element }; while (messages.children.length > 30) messages.lastElementChild.remove() } const confidence = Math.max(...data.detections.filter(d => d.class_name === 'fall').map(d => d.confidence)); activeEvent.frames.push({ image: data.frame_image, time: data.server_time, confidence }); activeEvent.endTime = data.server_time; activeEvent.lastFallAt = now; renderEvent(activeEvent) } else if (activeEvent && now - activeEvent.lastFallAt >= EVENT_GAP_MS) closeActiveEvent() }
+    async function sendFrame() { if (video.paused || video.ended || busy || !video.videoWidth) return; busy = true; server.textContent = 'Server: đang phân tích…'; const capture = document.createElement('canvas'); capture.width = video.videoWidth; capture.height = video.videoHeight; capture.getContext('2d').drawImage(video, 0, 0); try { const blob = await new Promise(resolve => capture.toBlob(resolve, 'image/jpeg', .82)); if (!blob) throw new Error('Không tạo được ảnh JPEG'); const body = new FormData(); body.append('frame', blob, 'frame.jpg'); const response = await fetch('/analyze-frame', { method: 'POST', body }), data = await response.json(); if (!response.ok) throw new Error(data.error || 'Server không thể xử lý khung hình'); drawBoxes(data); processEventResult(data); server.textContent = `Server: ${data.processing_ms} ms · ${data.detections.length} đối tượng` } catch (error) { server.innerHTML = `<span class="error">Server: ${error.message}</span>` } finally { busy = false } }
+    function startStreaming() { if (timer) return; timer = setInterval(sendFrame, 500); sendFrame() }
+    function stopStreaming() { clearInterval(timer); timer = null; busy = false; server.textContent = 'Server: đã tạm dừng' }
+    function updateTransport() { if (sourceMode === 'camera') return; seek.value = video.duration ? Math.round(video.currentTime / video.duration * 1000) : 0; timeLabel.textContent = `${formatTime(video.currentTime)} / ${formatTime(video.duration)}` }
+    function stopCameraTracks() { if (cameraStream) { cameraStream.getTracks().forEach(track => track.stop()); cameraStream = null } stopCamera.disabled = true; startCamera.disabled = false }
+    function resetSource() { closeActiveEvent(); stopStreaming(); if (!video.paused) video.pause(); stopCameraTracks(); video.srcObject = null; video.removeAttribute('src'); video.load(); video.style.display = 'none'; document.querySelector('#stage').classList.remove('has-video'); placeholder.style.display = 'block'; clearBoxes() }
+    function setSourceMode(mode) { if (sourceMode === mode) return; resetSource(); sourceMode = mode; const camera = mode === 'camera'; fileMode.classList.toggle('active', !camera); cameraMode.classList.toggle('active', camera); fileControls.style.display = camera ? 'none' : 'block'; cameraControls.style.display = camera ? 'block' : 'none'; transport.style.display = camera ? 'none' : 'grid'; placeholder.innerHTML = camera ? '<strong>Camera chưa bật</strong>Bấm “Bật camera” và cho phép trình duyệt sử dụng camera.' : '<strong>Chưa có video</strong>Chọn một file MP4 trong bảng điều khiển bên dưới.'; status.textContent = camera ? 'Sẵn sàng xin quyền camera.' : 'Sẵn sàng chọn video.'; server.textContent = 'Server: chờ khung hình' }
+    fileMode.onclick = () => setSourceMode('file'); cameraMode.onclick = () => setSourceMode('camera');
+    file.onchange = () => { const selected = file.files[0]; if (!selected) return; closeActiveEvent(); stopStreaming(); stopCameraTracks(); video.srcObject = null; if (objectUrl) URL.revokeObjectURL(objectUrl); objectUrl = URL.createObjectURL(selected); video.src = objectUrl; video.style.display = 'block'; document.querySelector('#stage').classList.add('has-video'); placeholder.style.display = 'none'; toggle.disabled = false; seek.disabled = false; status.textContent = `Đã chọn: ${selected.name}`; clearBoxes() };
+    startCamera.onclick = async () => { if (!navigator.mediaDevices?.getUserMedia) { status.innerHTML = '<span class="error">Trình duyệt không hỗ trợ camera hoặc trang chưa dùng HTTPS.</span>'; return } startCamera.disabled = true; status.textContent = 'Đang xin quyền sử dụng camera…'; try { stopCameraTracks(); cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing.value } }, audio: false }); video.removeAttribute('src'); video.srcObject = cameraStream; video.style.display = 'block'; document.querySelector('#stage').classList.add('has-video'); placeholder.style.display = 'none'; stopCamera.disabled = false; startCamera.disabled = true; await video.play(); status.textContent = `Camera ${facing.value === 'environment' ? 'sau' : 'trước'} đang stream.` } catch (error) { stopCameraTracks(); status.innerHTML = `<span class="error">Không thể mở camera: ${error.message}</span>` } };
+    stopCamera.onclick = () => { resetSource(); placeholder.innerHTML = '<strong>Camera đã tắt</strong>Bấm “Bật camera” để sử dụng lại.'; status.textContent = 'Camera đã được tắt.' };
+    facing.onchange = async () => { if (cameraStream) { stopCameraTracks(); startCamera.click() } };
+    toggle.onclick = () => video.paused ? video.play() : video.pause();
+    video.onplay = () => { toggle.textContent = '❚❚'; toggle.setAttribute('aria-label', 'Tạm dừng video'); live.classList.add('active'); live.querySelector('b').textContent = 'Đang stream'; status.textContent = 'Video đang phát và gửi khung hình.'; startStreaming() };
+    video.onpause = () => { toggle.textContent = '▶'; toggle.setAttribute('aria-label', 'Phát video'); live.classList.remove('active'); live.querySelector('b').textContent = 'Đang dừng'; if (sourceMode === 'file') status.textContent = 'Video đang tạm dừng.'; stopStreaming(); closeActiveEvent() };
+    video.onended = () => { status.textContent = 'Video đã phát hết.'; stopStreaming(); closeActiveEvent() }; video.ontimeupdate = updateTransport; video.onloadedmetadata = () => { syncCanvas(); updateTransport() };
+    seek.oninput = () => { if (video.duration) { video.currentTime = seek.value / 1000 * video.duration; clearBoxes(); updateTransport() } }; window.onresize = syncCanvas;
+  </script>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+  <script>
+    const WEBRTC_CAMERA_ID = new URLSearchParams(location.search).get('camera_id') || '1';
+    const peerConnections = new Map(), pendingViewers = new Set();
+    const enableFileWebRtc = document.querySelector('#enableFileWebRtc'), disableFileWebRtc = document.querySelector('#disableFileWebRtc'), fileWebRtcControls = document.querySelector('#fileWebRtcControls');
+    let fileWebRtcEnabled = false;
+    const fileWebRtcCanvas = document.createElement('canvas'), fileWebRtcContext = fileWebRtcCanvas.getContext('2d');
+    let fileWebRtcStream = null, fileWebRtcTimer = null;
+    const rtcConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    const signalingStatus = document.createElement('div');
+    signalingStatus.style.cssText = 'margin-top:4px;padding:10px 12px;border-radius:9px;background:#edf2fa;color:#526078;font-size:13px';
+    document.querySelector('.controls').append(signalingStatus);
+    function setSignalingStatus(text, error = false) { signalingStatus.textContent = `WebRTC camera ${WEBRTC_CAMERA_ID}: ${text}`; signalingStatus.style.color = error ? '#b71929' : '#526078' }
+    function startFileCaptureStream() {
+      if (fileWebRtcStream?.active) return fileWebRtcStream;
+      if (!video.videoWidth || !fileWebRtcCanvas.captureStream) return null;
+      fileWebRtcCanvas.width = video.videoWidth; fileWebRtcCanvas.height = video.videoHeight;
+      const drawFrame = () => { if (video.videoWidth) fileWebRtcContext.drawImage(video, 0, 0, fileWebRtcCanvas.width, fileWebRtcCanvas.height) };
+      drawFrame(); fileWebRtcTimer = setInterval(drawFrame, 1000 / 24);
+      fileWebRtcStream = fileWebRtcCanvas.captureStream(24);
+      return fileWebRtcStream;
+    }
+    function stopFileCaptureStream() {
+      clearInterval(fileWebRtcTimer); fileWebRtcTimer = null;
+      fileWebRtcStream?.getTracks().forEach(track => track.stop()); fileWebRtcStream = null;
+    }
+    function getOutboundStream() {
+      if (cameraStream?.active) return cameraStream;
+      return sourceMode === 'file' && fileWebRtcEnabled ? startFileCaptureStream() : null;
+    }
+    function closePeer(viewerSid) { const peer = peerConnections.get(viewerSid); if (peer) peer.close(); peerConnections.delete(viewerSid) }
+    function disconnectFileWebRtc() {
+      for (const viewerSid of peerConnections.keys()) pendingViewers.add(viewerSid);
+      for (const viewerSid of [...peerConnections.keys()]) closePeer(viewerSid);
+      if (signaling?.connected) signaling.emit('stream-ended', { camera_id: WEBRTC_CAMERA_ID });
+      stopFileCaptureStream();
+      setSignalingStatus('đã tắt kết nối stream MP4');
+    }
+    async function createOfferFor(viewerSid) {
+      if (sourceMode === 'file' && !fileWebRtcEnabled) { pendingViewers.add(viewerSid); setSignalingStatus('người xem đang chờ bạn bật kết nối stream'); return }
+      const stream = getOutboundStream();
+      if (!stream || stream.getVideoTracks().length === 0) { pendingViewers.add(viewerSid); setSignalingStatus('người xem đang chờ video được phát'); return }
+      pendingViewers.delete(viewerSid); closePeer(viewerSid);
+      const peer = new RTCPeerConnection(rtcConfig); peerConnections.set(viewerSid, peer);
+      stream.getTracks().forEach(track => peer.addTrack(track, stream));
+      peer.onicecandidate = event => { if (event.candidate) signaling.emit('ice-candidate', { camera_id: WEBRTC_CAMERA_ID, target_sid: viewerSid, candidate: event.candidate.toJSON() }) };
+      peer.onconnectionstatechange = () => {
+        if (peer.connectionState === 'connected') setSignalingStatus('đang truyền trực tiếp tới người giám sát');
+        if (['failed', 'closed', 'disconnected'].includes(peer.connectionState)) setSignalingStatus(`kết nối ${peer.connectionState}`);
+      };
+      const offer = await peer.createOffer(); await peer.setLocalDescription(offer);
+      signaling.emit('webrtc-offer', { camera_id: WEBRTC_CAMERA_ID, target_sid: viewerSid, sdp: peer.localDescription.toJSON() });
+      setSignalingStatus('đã gửi đề nghị kết nối tới người giám sát');
+    }
+    function offerToPendingViewers() { for (const viewerSid of [...pendingViewers]) createOfferFor(viewerSid).catch(error => setSignalingStatus(error.message, true)) }
+    let signaling;
+    if (typeof io === 'undefined') {
+      setSignalingStatus('không tải được Socket.IO client; hãy kiểm tra Internet', true);
+    } else {
+      signaling = io({ transports: ['websocket', 'polling'] });
+      signaling.on('connect', () => { signaling.emit('join-room', { camera_id: WEBRTC_CAMERA_ID, peer_role: 'sender' }); setSignalingStatus('đã kết nối signaling, đang chờ người giám sát') });
+      signaling.on('viewer-ready', data => { if (String(data.camera_id) === String(WEBRTC_CAMERA_ID)) createOfferFor(data.viewer_sid).catch(error => setSignalingStatus(error.message, true)) });
+      signaling.on('webrtc-answer', async data => { const peer = peerConnections.get(data.sender_sid); if (peer) await peer.setRemoteDescription(data.sdp) });
+      signaling.on('ice-candidate', async data => { const peer = peerConnections.get(data.sender_sid); if (peer && data.candidate) await peer.addIceCandidate(data.candidate) });
+      signaling.on('peer-left', data => { closePeer(data.socket_id); pendingViewers.delete(data.socket_id); setSignalingStatus('người giám sát đã ngắt kết nối') });
+      signaling.on('disconnect', () => setSignalingStatus('mất kết nối signaling, đang thử kết nối lại', true));
+      signaling.on('signaling-error', data => setSignalingStatus(data.message || 'lỗi signaling', true));
+    }
+    enableFileWebRtc.addEventListener('click', () => {
+      fileWebRtcEnabled = true;
+      enableFileWebRtc.disabled = true;
+      disableFileWebRtc.disabled = false;
+      setSignalingStatus('đã bật kết nối stream MP4, đang chờ người giám sát');
+      offerToPendingViewers();
+    });
+    disableFileWebRtc.addEventListener('click', () => {
+      fileWebRtcEnabled = false;
+      enableFileWebRtc.disabled = false;
+      disableFileWebRtc.disabled = true;
+      disconnectFileWebRtc();
+    });
+    fileMode.addEventListener('click', () => { fileWebRtcControls.style.display = 'flex' });
+    cameraMode.addEventListener('click', () => {
+      if (fileWebRtcEnabled) { fileWebRtcEnabled = false; disconnectFileWebRtc() }
+      enableFileWebRtc.disabled = false;
+      disableFileWebRtc.disabled = true;
+      fileWebRtcControls.style.display = 'none';
+    });
+    video.addEventListener('loadedmetadata', () => { if (sourceMode !== 'file' || fileWebRtcEnabled) offerToPendingViewers() });
+    window.addEventListener('beforeunload', () => { if (signaling?.connected) signaling.emit('stream-ended', { camera_id: WEBRTC_CAMERA_ID }); stopFileCaptureStream(); for (const peer of peerConnections.values()) peer.close() });
+  </script>
+  <script>
+    const makeTestCall = document.querySelector('#makeTestCall'), testCallStatus = document.querySelector('#testCallStatus');
+    makeTestCall.addEventListener('click', async () => {
+      makeTestCall.disabled = true; testCallStatus.textContent = 'Đang yêu cầu Infobip gọi…'; testCallStatus.style.color = '#687287';
+      try { const response = await fetch('/api/calls/test', { method: 'POST' }), result = await response.json(); if (!response.ok) throw new Error(result.detail || result.error || 'Không thể tạo cuộc gọi'); testCallStatus.textContent = `Infobip đã nhận yêu cầu gọi ${result.to_number} từ ${result.from_number} · Trạng thái: ${result.status || 'đang xử lý'}`; testCallStatus.style.color = '#16834b' } catch (error) { testCallStatus.textContent = `Gọi thất bại: ${error.message}`; testCallStatus.style.color = '#b71929' } finally { makeTestCall.disabled = false }
+    });
+  </script>
+  <script>
+    const vitalSimulation = {
+      heart: { mode: 'normal', value: 74 },
+      spo2: { mode: 'normal', value: 98 },
+      bloodPressure: { mode: 'normal', systolic: 114, diastolic: 74 },
+      steps: { mode: 'stopped', value: 0 },
+    };
+    const heartValue = document.querySelector('#heartValue'), heartPulse = document.querySelector('#heartPulse'), spo2Value = document.querySelector('#spo2Value'), bloodPressureValue = document.querySelector('#bloodPressureValue'), stepsValue = document.querySelector('#stepsValue');
+    const vitalModes = {
+      heart: { stopped: { label: 'Không đập', range: 'Mô phỏng: 0 bpm', min: 0, max: 0, state: 'danger' }, slow: { label: 'Đập chậm', range: 'Dao động demo: 45–58 bpm', min: 45, max: 58, state: 'warning' }, normal: { label: 'Bình thường', range: 'Dao động demo: 65–85 bpm', min: 65, max: 85, state: '' }, fast: { label: 'Đập nhanh', range: 'Dao động demo: 105–130 bpm', min: 105, max: 130, state: 'danger' } },
+      spo2: { low: { label: 'Loãng', range: 'Dao động demo: 88–93%', min: 88, max: 93, state: 'danger' }, normal: { label: 'Bình thường', range: 'Dao động demo: 95–98%', min: 95, max: 98, state: '' }, high: { label: 'Đậm', range: 'Dao động demo: 99–100%', min: 99, max: 100, state: 'warning' } },
+      bloodPressure: { low: { label: 'Tụt huyết áp', range: 'Dao động demo: 78–89 / 48–59', sys: [78, 89], dia: [48, 59], state: 'danger' }, normal: { label: 'Bình thường', range: 'Dao động demo: 105–119 / 65–79', sys: [105, 119], dia: [65, 79], state: '' }, high: { label: 'Cao huyết áp', range: 'Dao động demo: 145–170 / 92–110', sys: [145, 170], dia: [92, 110], state: 'danger' } },
+      steps: { stopped: { label: 'Đang dừng', range: 'Không tăng khi đang dừng', increment: 0, state: '' }, walk: { label: 'Đang đi', range: 'Tăng 1 bước mỗi giây', increment: 1, state: '' }, run: { label: 'Đang chạy', range: 'Tăng 3 bước mỗi giây', increment: 3, state: 'warning' } },
+    };
+    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const drift = (value, min, max) => Math.max(min, Math.min(max, value + randomInt(-2, 2)));
+    function setVitalBadge(id, mode) { const badge = document.querySelector(`#${id}State`), config = vitalModes[id][mode]; badge.textContent = config.label; badge.className = `vital-state ${config.state}`.trim(); document.querySelector(`#${id}Range`).textContent = config.range }
+    function setVitalMode(vital, mode) {
+      vitalSimulation[vital].mode = mode;
+      const config = vitalModes[vital][mode];
+      if (vital === 'heart') vitalSimulation.heart.value = randomInt(config.min, config.max);
+      if (vital === 'spo2') vitalSimulation.spo2.value = randomInt(config.min, config.max);
+      if (vital === 'bloodPressure') { vitalSimulation.bloodPressure.systolic = randomInt(...config.sys); vitalSimulation.bloodPressure.diastolic = randomInt(...config.dia) }
+      setVitalBadge(vital, mode); renderVitals();
+    }
+    function renderVitals() {
+      heartValue.textContent = vitalSimulation.heart.value; heartPulse.classList.toggle('stopped', vitalSimulation.heart.value === 0);
+      spo2Value.textContent = vitalSimulation.spo2.value;
+      bloodPressureValue.textContent = `${vitalSimulation.bloodPressure.systolic}/${vitalSimulation.bloodPressure.diastolic}`;
+      stepsValue.textContent = vitalSimulation.steps.value.toLocaleString('vi-VN');
+    }
+    document.querySelectorAll('.vital-actions').forEach(group => group.addEventListener('click', event => {
+      const button = event.target.closest('button'); if (!button) return;
+      group.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
+      setVitalMode(group.dataset.vital, button.dataset.mode);
+
+      // ✅ Thêm dòng này
+      if (group.dataset.vital === 'heart' && button.dataset.mode === 'stopped') {
+        callEmergency();
+      }
+    }));
+    setInterval(() => {
+      const heartConfig = vitalModes.heart[vitalSimulation.heart.mode];
+      vitalSimulation.heart.value = vitalSimulation.heart.mode === 'stopped' ? 0 : drift(vitalSimulation.heart.value, heartConfig.min, heartConfig.max);
+      const spo2Config = vitalModes.spo2[vitalSimulation.spo2.mode];
+      vitalSimulation.spo2.value = drift(vitalSimulation.spo2.value, spo2Config.min, spo2Config.max);
+      const pressureConfig = vitalModes.bloodPressure[vitalSimulation.bloodPressure.mode];
+      vitalSimulation.bloodPressure.systolic = drift(vitalSimulation.bloodPressure.systolic, ...pressureConfig.sys);
+      vitalSimulation.bloodPressure.diastolic = drift(vitalSimulation.bloodPressure.diastolic, ...pressureConfig.dia);
+      vitalSimulation.steps.value += vitalModes.steps[vitalSimulation.steps.mode].increment;
+      renderVitals();
+      if (signaling?.connected) {
+        signaling.emit('watch-vitals', {
+          camera_id: WEBRTC_CAMERA_ID,
+          measured_at: new Date().toISOString(),
+          vitals: {
+            heart_rate: { value: vitalSimulation.heart.value, unit: 'bpm', state: vitalSimulation.heart.mode },
+            spo2: { value: vitalSimulation.spo2.value, unit: '%', state: vitalSimulation.spo2.mode },
+            blood_pressure: { systolic: vitalSimulation.bloodPressure.systolic, diastolic: vitalSimulation.bloodPressure.diastolic, unit: 'mmHg', state: vitalSimulation.bloodPressure.mode },
+            steps: { value: vitalSimulation.steps.value, unit: 'steps', state: vitalSimulation.steps.mode },
+          },
+        });
+      }
+    }, 1000);
+    renderVitals();
+
+    // ✅ Thêm hàm này
+    async function callEmergency() {
+      try {
+        await fetch('/api/calls/test', { method: 'POST' })
+      } catch (error) {
+        console.error('Lỗi gọi cấp cứu:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>

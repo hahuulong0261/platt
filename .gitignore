@@ -8,3 +8,6 @@ static/results/
 .app-config/
 Ultralytics/
 __pycache__/
+db/*.db
+db/event_images/
+firebase-service-account.json
